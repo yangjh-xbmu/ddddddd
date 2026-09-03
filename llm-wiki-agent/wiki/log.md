@@ -15,3 +15,5 @@
 ## [2026-09-03] ingest | 笔记：Obsidian 双链工作流实录（自用）
 
 ## [2026-09-03] ingest | Karpathy 谈 LLM Wiki：让知识自己长出来
+
+## [2026-09-03] report | 修正坑#1：443 为偶发超时（push 同 host 成功反证），非硬墙

@@ -21,7 +21,7 @@ build_graph.py 只能跑 Pass-1、lint.py 只能跑确定性部分。
 - 放弃 open-knowledge（GPL v3 + Node24 运行时，试用太重）与 OLW（转维护模式 + 依赖多）
 - 调研时点各项目星数：open-knowledge ~3.9k、llm-wiki-agent ~3.5k、OLW ~820
 - 本地可靠 layer = schema + health.py；模型依赖 layer = ingest/query/语义 lint
-- 离线跑该项目的 4 个已知坑：git 443 / lint-语义要 API / graph Pass-2 要 API / 正文里双中括号 wikilink 字面量会触发假断链
+- 离线跑该项目的 4 个已知坑：git 偶发 443 / lint-语义要 API / graph Pass-2 要 API / 正文里双中括号 wikilink 字面量会触发假断链
 - 落地路径：先用 llm-wiki-agent + 本地模型跑日常，质量不够处等强模型再上 OLW/open-knowledge 补强
 
 ## Key Quotes

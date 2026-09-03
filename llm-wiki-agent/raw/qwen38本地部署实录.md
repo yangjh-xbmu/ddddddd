@@ -50,11 +50,12 @@ tag 成了 `qwen3.8-q5-262k:latest`。`num_ctx` 是按 262144 烤进 Modelfile �
 
 ## 踩的坑（按发生顺序）
 
-1. **GitHub 443 直连不通。** `git clone` 到 github.com 直接
-   `Failed to connect ... port 443`，但 web/HTTPS 代理通道是通的。绕过方式：
-   走 `raw.githubusercontent.com` 逐文件拉（本次 llm-wiki-agent 就是这
-   样还原的）。教训：这台机器 git 要配 proxy 或走 raw/镜像，否则大量
-   "clone 依赖"的开源项目第一步就卡死。
+1. **GitHub 443 连接不稳定（intermittent），不是硬墙。** 同一天同一台机器：
+   `git clone` 到 github.com 报 `Failed to connect ... port 443 after 21s`，
+   但随后的 `git push` 到同一 host **2.7s 成功**，`raw.githubusercontent.com`
+   也全程可读。结论：443 是**间歇性超时**（可能 DNS/连接重置/偶发阻断），
+   不是稳定不通。应对：失败就重试、或改走 `raw.githubusercontent.com`
+   逐文件拉（本次 llm-wiki-agent 即用此法还原）、或配 proxy 让它稳定。
 2. **262k 上下文显存吃满。** 实测 nvidia-smi 31.7/32.6 GB。并发开第二个
    27B 级模型、或跑带 20GB 的 vision 模型同时驻留都放不下。ollama 的
     unload 是空闲 ~5 分钟才生效，切换模型时有等待窗口。小显存机器要主动

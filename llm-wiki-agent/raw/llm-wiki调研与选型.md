@@ -31,7 +31,7 @@
 
 选它的理由（针对本机环境）：
 1. **零外部依赖**：不需要 API key、不需要起服务——agent（包括本地小模型
-   驱动的 omp 会话）直接读 AGENTS.md schema 干活。本机 GitHub 443 不通、
+   驱动的 omp 会话）直接读 AGENTS.md schema 干活。本机 GitHub 443 偶发超时、
    不想装一堆 python 包，这是唯一"读 README 就能跑"的。
 2. **schema 即文档**：AGENTS.md 把 ingest/query/lint/health/graph 工作流、
    页面格式、命名规范全写成可执行的 agent 指令，本身是"agent 维护知识库"
@@ -59,7 +59,7 @@ ingest → query → lint → graph 全流程，13 页 wiki + 13 节点 65 边�
   孤儿页和 `[[wikilink]]` 字面量假断链——这两点证明了"编译式维护"相对
   "检索式"的结构性优势不是空话
 - **本机跑该项目的已知坑**：
-  1. git clone 443 不通 → 用 raw.githubusercontent.com 逐文件还原
+  1. git clone 偶发 443 超时（间歇性，push 同 host 2.7s 成功）→ 重试或走 raw 逐文件还原
   2. build_graph.py 的 Pass-2（语义推断）要 litellm + API → 离线环境跳过，
      只用 Pass-1（确定性 wikilink 解析）就够出图
   3. lint.py 的语义部分同样要 API → 离线 lint 只保留确定性部分

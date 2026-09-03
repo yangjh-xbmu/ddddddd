@@ -10,7 +10,7 @@ source_file: raw/qwen38本地部署实录.md
 本机（RTX 5090 D 32GB / 64GB / i7-14700F）用 [[Ollama]] 0.33.2 跑
 [[Qwen38]]（27.3B，Q5_K_M，num_ctx 烤到 262144），omp 通过 OpenAI 兼容接口
 （127.0.0.1:11434/v1，无 key）接入作为默认模型。实测 GPU offload 100%、
-常驻 29GB、显存 31.7/32.6GB（贴地）。记录 6 个部署坑：GitHub 443 不通、
+常驻 29GB、显存 31.7/32.6GB（贴地）。记录 6 个部署坑：GitHub 443 偶发超时、
 262k 上下文吃满显存、thinking 吃 max_tokens、vision 模型缺 role 映射、
 应用层与 git 层网络出口不同、bash/PowerShell 混用翻车。
 

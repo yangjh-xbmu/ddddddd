@@ -23,7 +23,7 @@ omp (models.yml: provider ollama-local, baseUrl 127.0.0.1:11434/v1)
 262144 的代价就是全部 KV cache）。
 
 ## 本机 6 个坑（摘要）
-1. GitHub 443 不通（git 层），浏览器/代理层通 → 走 raw 或配 proxy
+1. GitHub 443 偶发超时（clone 21s 失败，同 host push 2.7s 成功）→ 重试 / 走 raw / 配 proxy
 2. 262k 吃满显存，并发不了第二 27B 模型
 3. thinking 吃 max_tokens，正文可能为空
 4. vision 模型没配 modelRoles.vision = 白下
