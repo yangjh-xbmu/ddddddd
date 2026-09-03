@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill · 插件 · MCP 一分钟分清</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2430; --sub:#6a7180;
+    --line:#e6e8ee; --acc:#3d5af1; --acc-soft:#eef1fd; --acc-line:#cfd7f8;
+    --mono:"Cascadia Code",Consolas,"Courier New",monospace;
+    --ok:#137a4b; --ok-soft:#e8f5ef; --bad:#b4233f; --bad-soft:#fbeef1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);
+    color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);
+    padding-bottom:14px;margin-bottom:34px}
+  .top h1{font-size:20px;letter-spacing:.5px}
+  .top .est{font-size:12px;color:var(--sub)}
+
+  .lead{max-width:680px;margin-bottom:44px}
+  .lead .s{font-size:11px;letter-spacing:3px;color:var(--acc);font-weight:600}
+  .lead h2{font-size:25px;font-weight:800;line-height:1.5;margin:10px 0 6px}
+  .lead .hl{color:var(--acc)}
+  .lead p{font-size:14.5px;color:var(--sub)}
+  .lead .one{font-size:15px;color:var(--ink);background:var(--acc-soft);border-left:3px solid var(--acc);
+    padding:10px 14px;border-radius:0 10px 10px 0;margin:14px 0 4px;line-height:1.7}
+
+  section{margin-bottom:42px}
+  .sechead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sechead .no{font-size:11px;font-weight:800;color:var(--acc);border:1px solid var(--acc-line);padding:2px 9px;border-radius:999px}
+  .sechead h3{font-size:17px;font-weight:800}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+
+  /* 三者画像 */
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:700px){.three{grid-template-columns:1fr}}
+  .who{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 17px}
+  .who h4{font-size:15px;font-weight:800;margin-bottom:2px}
+  .who .en{font-family:var(--mono);font-size:11.5px;color:var(--sub);margin-bottom:10px}
+  .who .lab{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:1px}
+  .who p{font-size:12.5px;color:var(--sub);margin:2px 0 8px}
+  .who .ex{font-size:12px;color:var(--ink);background:#f6f7fa;border-radius:8px;padding:7px 10px}
+  .who .ex b{display:block;font-size:11px;color:var(--sub);font-weight:600}
+
+  /* 协同与误区 */
+  .myth{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.myth{grid-template-columns:1fr}}
+  .myth .card{padding:16px 18px}
+  .myth .tag{font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  .myth .tag.w{color:var(--bad)}
+  .myth .tag.g{color:var(--ok)}
+  .myth p{font-size:13px;color:var(--sub)}
+  .myth b{color:var(--ink)}
+  .coop{background:var(--acc-soft);border:1px solid var(--acc-line);border-radius:14px;padding:16px 18px;margin-top:14px}
+  .coop b{font-size:14px;color:var(--acc)}
+  .coop p{font-size:13px;color:var(--ink);margin-top:4px}
+
+  .row{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+  .row::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc);margin-top:9px;flex:none}
+  .row p{font-size:13.5px;color:var(--sub)}
+  .row b{color:var(--ink)}
+
+  /* quiz 同构（分层自适应） */
+  .quiz{padding:22px 24px}
+  .qtop{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .qcnt{font-size:13px;color:var(--sub);font-weight:600;white-space:nowrap}
+  .qcnt b{font-size:15px;color:var(--ink)}
+  .track{flex:1;min-width:80px;height:5px;background:#edeff4;border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;width:14%;background:var(--acc);border-radius:3px;transition:width .3s}
+  .status{display:flex;align-items:center;gap:14px;margin:4px 0 16px;font-size:12px;color:var(--sub);flex-wrap:wrap}
+  .dlv{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .cells{display:inline-flex;gap:3px}
+  .cells i{width:16px;height:7px;border-radius:2px;background:#dcdfe8}
+  .cells i.on{background:var(--acc)}
+  .streak{font-weight:700;color:var(--acc)}
+  .qtitle{font-size:16px;font-weight:800;margin-bottom:16px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);
+    border-radius:11px;padding:11px 14px;background:#fff;cursor:pointer;font-family:inherit;font-size:14px;
+    color:var(--ink);transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--acc)}
+  .opt .ab{color:var(--sub);font-weight:700;font-size:13px;width:16px;flex:none}
+  .opt.good{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.good .ab{color:var(--ok)}
+  .opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.bad .ab{color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .exp{display:none;margin-top:12px;padding:11px 14px;border-radius:10px;font-size:13.5px;line-height:1.6}
+  .exp.show{display:block}
+  .exp.ok{background:var(--ok-soft);color:#0d5c39}
+  .exp.no{background:var(--bad-soft);color:#8a1d34}
+  .nextline{display:none;margin-top:14px;justify-content:flex-end}
+  .nextline.show{display:flex}
+  .btn{border:none;border-radius:9px;padding:8px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .gonext{background:var(--acc);color:#fff}
+  .gonext:hover{filter:brightness(1.06)}
+
+  .res{display:none;text-align:center;padding:26px 10px 8px}
+  .ring{width:120px;height:120px;margin:0 auto 18px;border-radius:50%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;border:8px solid var(--acc-soft)}
+  .ring b{font-size:30px;font-weight:800;color:var(--acc);line-height:1.2}
+  .ring span{font-size:12px;color:var(--sub)}
+  .res h2{font-size:20px;margin-bottom:6px}
+  .res .vt{font-size:13.5px;color:var(--sub);max-width:440px;margin:0 auto}
+  .res .again{margin-top:18px}
+  .resc{margin:20px auto 0;max-width:500px;text-align:left}
+  .resc .tl{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:6px}
+  .resc .c{font-size:13px;color:var(--sub)}
+
+  .sources{border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+  .sources h3{font-size:14px;font-weight:800;margin-bottom:10px}
+  .src{display:flex;gap:10px;padding:5px 0;font-size:13px;align-items:baseline}
+  .src .n{color:var(--acc);font-weight:800;flex:none}
+  .src a{color:var(--acc);text-decoration:none;word-break:break-all}
+  .src a:hover{text-decoration:underline}
+  .src .w{color:var(--sub);font-size:12px}
+  footer{margin-top:16px;font-size:11.5px;color:#a8aebc;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>Skill · 插件 · MCP 速成</h1>
+    <span class="est">读图约 40 秒 · 自适应测验 2–7 题</span>
+  </div>
+
+  <div class="lead">
+    <div class="s">Core Fact · 先纠一个普遍误解</div>
+    <h2>它们不是同类东西：<br><span class="hl">Skill 管"会不会"</span> · 插件管"接不接" · <span class="hl">MCP 管"怎么统一接"</span></h2>
+    <div class="one">一句话分清：Skill 是"方法论"（教 AI 怎么把事做专业），插件/外部工具是"能力"（让 AI 能操作真实系统），MCP 是让这些工具接入 AI 的"标准化协议"。</div>
+  </div>
+
+  <!-- 01 画像 -->
+  <section>
+    <div class="sechead"><span class="no">01</span><h3>三者画像</h3></div>
+    <div class="three">
+      <div class="who">
+        <h4>技能 Skill</h4>
+        <div class="en">文件夹：SKILL.md 必需</div>
+        <div class="lab">管什么</div>
+        <p>知识 · 流程 · 方法论，让 AI 在特定领域更专业（怎么做）。</p>
+        <div class="ex"><b>例子</b>pdf-to-word、会议纪要、Excel 清洗</div>
+      </div>
+      <div class="who">
+        <h4>插件 / 连接器</h4>
+        <div class="en">接入外部系统</div>
+        <div class="lab">管什么</div>
+        <p>把第三方应用、数据源、API 接进来，让 AI 能真正动手（做什么）。</p>
+        <div class="ex"><b>例子</b>数据库、云服务 API、公众号</div>
+      </div>
+      <div class="who">
+        <h4>协议 MCP</h4>
+        <div class="en">Model Context Protocol</div>
+        <div class="lab">管什么</div>
+        <p>AI 工具调用的<strong>标准化协议</strong>，让各种外部工具插口统一、可互通。</p>
+        <div class="ex"><b>例子</b>经 MCP 连 MySQL、网页抓取</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 误区与协同 -->
+  <section>
+    <div class="sechead"><span class="no">02</span><h3>易错点与协同</h3></div>
+    <div class="myth">
+      <div class="card">
+        <div class="tag w">误区 A · Skill 是单个文件？</div>
+        <p>不是。<b>Skill 是一个文件夹（目录）</b>，目录里必需 SKILL.md，可配 scripts/、references/、assets/。</p>
+      </div>
+      <div class="card">
+        <div class="tag w">误区 B · Skill 只"讲道理"不碰工具？</div>
+        <p>不是。官方文档称 Skill 封装<b>脚本与工作流</b>，在授权下也能调用第三方 API —— 但它的本分仍是教"怎么做"。</p>
+      </div>
+    </div>
+    <div class="coop">
+      <b>正解：Skill 与 MCP 互补而非对立</b>
+      <p>Skills 提供"执行方法论"（如何完成任务），MCP 提供"工具能力"（可以调用哪些外部工具），两者可同时使用 —— 一个 Skill 可以指导 AI 通过 MCP 连上的数据库工具完成查询。</p>
+    </div>
+  </section>
+
+  <!-- 03 装前注意 -->
+  <section>
+    <div class="sechead"><span class="no">03</span><h3>使用前注意</h3></div>
+    <div class="card" style="padding:16px 20px">
+      <div class="row"><p><b>装第三方 Skill 前先审计</b>：网络下载的技能包可能夹带风险脚本，安装前分级把关 —— <b style="color:var(--bad)">P0 危险别装</b> / P1 谨慎确认 / <b style="color:var(--ok)">P2 安全可装</b>。</p></div>
+      <div class="row"><p><b>插件/MCP 涉及授权</b>：接入外部系统前先核对权限申请与数据外发范围，用小范围验证后再放大使用。</p></div>
+    </div>
+  </section>
+
+  <!-- 04 自测 -->
+  <section>
+    <div class="sechead"><span class="no">04</span><h3>自测 · 答对升档 答错降档</h3></div>
+    <div class="card quiz">
+      <div id="qview">
+        <div class="qtop">
+          <span class="qcnt">第 <b id="qidx">1</b> / 7 题</span>
+          <div class="track"><i id="pfill"></i></div>
+        </div>
+        <div class="status">
+          <span class="dlv">难度
+            <span class="cells" id="cells"><i class="on"></i><i class="on"></i><i></i></span>
+            <span id="dlvtx">进阶</span>
+          </span>
+          <span>连对 <b class="streak" id="streak">×0</b></span>
+          <span style="color:#a4aab8">答对升难度 · 答错降难度 · 连对 3 题通关</span>
+        </div>
+        <div class="qtitle" id="qtext"></div>
+        <div class="opts" id="opts"></div>
+        <div class="exp" id="exp"></div>
+        <div class="nextline" id="nxtline"><button class="btn gonext" id="nxt">下一题 →</button></div>
+      </div>
+      <div class="res" id="res">
+        <div class="ring"><b id="rtitle">评级</b><span id="rsub">难度评级</span></div>
+        <h2 id="rh">自测完成</h2>
+        <p class="vt" id="vt"></p>
+        <div class="resc">
+          <div class="tl">作答轨迹</div>
+          <div class="c" id="trail"></div>
+        </div>
+        <button class="btn gonext again" id="again">再测一次</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="sources">
+    <h3>资料来源</h3>
+    <div class="src"><span class="n">1</span><div><a href="https://cloud.tencent.com/developer/techpedia/2610/20530" target="_blank" rel="noopener">腾讯云开发者百科 · WorkBuddy 自定义技能扩展（Skill 与 MCP 区分金句出处）</a><br><span class="w">依据：Skills 提供执行方法论、MCP 提供工具能力、两者可同时使用；技能包=含 SKILL.md 的文件夹</span></div></div>
+    <div class="src"><span class="n">2</span><div><a href="https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market" target="_blank" rel="noopener">WorkBuddy 官方文档 · 技能(Skills) 页</a><br><span class="w">依据：Skill 定义（封装脚本与工作流、可调用第三方 API）、第三方安装审计与授权提示</span></div></div>
+    <div class="src"><span class="n">3</span><div><a href="https://www.workbuddy.cn/docs/workbuddy/Overview" target="_blank" rel="noopener">WorkBuddy 文档首页</a><br><span class="w">依据：产品能力范围</span></div></div>
+    <div class="src"><span class="n">4</span><div>本机内置官方技能 <code style="font-family:var(--mono);font-size:12px;background:#f1f2f6;border-radius:4px;padding:0 5px">skill-creator/SKILL.md</code><br><span class="w">依据：Skill 目录标准结构（SKILL.md 必需，scripts/references/assets 可选）</span></div></div>
+  </div>
+
+  <footer>内容依据上述官方文档编写 · 本页由 minute-lesson 技能生成</footer>
+</div>
+
+<script>
+const LVL=["初学","进阶","熟练"];
+const BANK=[
+  /* 初学 */
+  {t:"想给 AI 补充"某领域的专业做法与标准流程"，应扩展什么？",
+   o:["技能 Skill","电脑内存","网络带宽","显示器分辨率"],
+   a:0,e:"Skill=知识与方法论的封装，让 AI 在特定领域更专业。",lv:1},
+  {t:"想让 AI 直接查询你公司的 MySQL 数据库，最合适的方式是？",
+   o:["给 AI 装更多字体","通过 MCP/插件接入数据库工具","升级电脑系统","买新显示器"],
+   a:1,e:"查库属于"工具能力"，由外部工具/MCP 提供，Skill 管的是"怎么查更规范"。",lv:1},
+  {t:"MCP 的全称是？",
+   o:["Model Context Protocol","Main Control Panel","Mini Code Package","Message Center Program"],
+   a:0,e:"MCP = Model Context Protocol，AI 工具调用的标准化协议。",lv:1},
+  /* 进阶 */
+  {t:"区分 Skill 与 MCP 最准确的一句话是？",
+   o:["Skills=执行方法论，MCP=工具能力，两者互补","二者是同一件事的两种叫法","MCP 必须装进 Skill 里才能用","Skill 是 MCP 的一种硬件"],
+   a:0,e:"方法论管"怎么做"，工具能力管"能调哪些外部工具"，可同时使用。",lv:2},
+  {t:"关于 Skill 的存储形态，正确的是？",
+   o:["一个含 SKILL.md 的文件夹","单个 .md 文件就够","必须是一个 .exe","常驻内存的配置项"],
+   a:0,e:"每个 Skill 是一个包含 SKILL.md 的文件夹，SKILL.md 必需，其余资源可选。",lv:2},
+  {t:"一个 Skill 与一个经 MCP 接入的数据库工具，能配合吗？",
+   o:["能，Skill 指导 AI 用 MCP 连的工具干活","不能，两者互斥","只能二选一安装","配合需要额外付费插件"],
+   a:0,e:"官方明确：两者可同时使用，Skill 可指导 AI 通过 MCP 连接的数据库工具完成查询。",lv:2},
+  /* 熟练 */
+  {t:"官方文档称 Skill 封装脚本与工作流——在获得授权后，Skill 能调用第三方 API 吗？",
+   o:["能","不能，Skill 只读文档","仅限腾讯自家服务","需要先卸载其他技能"],
+   a:0,e:"官方技能页：Skill 可增加"特定工具能力"，在授权下完成调用第三方 API 等动作。",lv:3},
+  {t:""让 AI 变聪明"与"让 AI 有能力动手"，分别对应？",
+   o:["Skill=方法论 / 插件·MCP=工具能力","Skill=工具 / MCP=文档","插件=聪明 / Skill=能干","无法对应"],
+   a:0,e:"Skill 增强知识与流程（更专业），插件/MCP 扩展可调用的外部系统（更能干）。",lv:3},
+  {t:"收到别人发来的 xxx.zip 技能包并导入后，你得到的是？",
+   o:["还原成含 SKILL.md 的技能文件夹","一段无法运行的乱码","一堆图片","一个网页链接"],
+   a:0,e:"zip 只是分发格式，导入即解包还原为技能文件夹（含 SKILL.md）。",lv:3}
+];
+let cur=null,lvl=2,streak=0,rounds=0,used=new Set(),finished=false,trail=[];
+const $v=document.getElementById('qview'),$r=document.getElementById('res');
+const elIdx=document.getElementById('qidx'),elPf=document.getElementById('pfill'),
+      elCell=[...document.getElementById('cells').children],elDlv=document.getElementById('dlvtx'),
+      elStreak=document.getElementById('streak'),elQ=document.getElementById('qtext'),
+      elOpts=document.getElementById('opts'),elExp=document.getElementById('exp'),
+      nxtline=document.getElementById('nxtline'),nxt=document.getElementById('nxt');
+function paintStatus(){
+  elIdx.textContent=Math.min(rounds+1,7);
+  elPf.style.width=(rounds/7*100)+'%';
+  elCell.forEach((c,i)=>c.className=i<lvl?'on':'');
+  elDlv.textContent=LVL[lvl-1];
+  elStreak.textContent='×'+streak;
+}
+function nextQ(){
+  let c=BANK.filter(q=>!used.has(q)&&q.lv===lvl);
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.min(3,lvl+1));
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.max(1,lvl-1));
+  if(!c.length){finish();return;}
+  cur=c[0];used.add(cur);rounds++;
+  paintStatus();
+  elQ.textContent=cur.t;
+  elOpts.innerHTML='';
+  cur.o.forEach((txt,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='opt';
+    b.innerHTML='<span class="ab">'+String.fromCharCode(65+i)+'</span><span>'+txt+'</span>';
+    b.onclick=()=>answer(i);elOpts.appendChild(b);
+  });
+  elExp.className='exp';elExp.textContent='';nxtline.className='nextline';
+}
+function answer(i){
+  if(finished)return;
+  const right=i===cur.a;
+  [...elOpts.children].forEach((o,j)=>{o.disabled=true;
+    if(j===cur.a)o.classList.add('good');else if(j===i)o.classList.add('bad');});
+  if(right){streak++;if(lvl<3)lvl++;}
+  else{streak=0;if(lvl>1)lvl--;}
+  trail.push({q:cur.t,ok:right,lvl});
+  elExp.className='exp show '+(right?'ok':'no');
+  elExp.innerHTML=(right?'答对 · 难度上升，':'答错 · 难度下调，正确答案 '+String.fromCharCode(65+cur.a)+'。')+cur.e;
+  paintStatus();
+  nxtline.className='nextline show';
+  nxt.textContent=(streak>=3||rounds>=7)?'查看评级 →':'下一题 →';
+}
+nxt.onclick=()=>{ if(streak>=3||rounds>=7)finish(); else nextQ(); };
+function finish(){
+  finished=true; $v.style.display='none';$r.style.display='block';
+  const pass=streak>=3;
+  const grade=pass?3:lvl;
+  document.getElementById('rtitle').textContent=pass?'熟练通关':'评级 '+LVL[grade-1];
+  document.getElementById('rsub').textContent='共答 '+rounds+' 题';
+  const ok=trail.filter(t=>t.ok).length;
+  let h,v;
+  if(pass){h='连续答对 3 题，通关';v='三个概念的边界已经拿捏。现在可以试试：给自己下一个结论——"我接下来要扩展 AI 的哪方面能力"，然后选对应机制。';}
+  else if(grade===3){h='答对 '+ok+'/'+rounds+'，稳住熟练';v='在"熟练"档出现过失误。建议回看 02 节协同关系，再冲满分通关。';}
+  else if(grade===2){h='评级：进阶';v='基础分清了三者，但边界题不够稳。重读 01 三者画像再测。';}
+  else{h='评级：初学';v='先把 01 画像里 Skill/插件/MCP 各管什么逐行读完，再回来测。';}
+  document.getElementById('rh').textContent=h;
+  document.getElementById('vt').textContent=v;
+  document.getElementById('trail').innerHTML=trail.map((t,i)=>
+    '<div style="padding:2px 0"><b style="color:'+(t.ok?'#137a4b':'#b4233f')+'">'+(t.ok?'✓':'✗')+'</b> Q'+(i+1)+' ['+LVL[t.lvl-1]+'] '+t.q.slice(0,20)+(t.q.length>20?'…':'')+'</div>').join('');
+}
+document.getElementById('again').onclick=()=>{
+  lvl=2;streak=0;rounds=0;used=new Set();finished=false;trail=[];nxt.textContent='下一题 →';
+  $v.style.display='block';$r.style.display='none';nextQ();
+};
+nextQ();
+</script>
+</body>
+</html>

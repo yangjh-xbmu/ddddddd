@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Skill 一分钟速成</title>
+<style>
+  /* 极简：白 / 灰 / 一主蓝 + 判题两语义色。知识点以官方 skill-creator 技能文档为据 */
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2430; --sub:#6a7180;
+    --line:#e6e8ee; --acc:#3d5af1; --acc-soft:#eef1fd; --acc-line:#cfd7f8;
+    --mono:"Cascadia Code",Consolas,"Courier New",monospace;
+    --ok:#137a4b; --ok-soft:#e8f5ef; --bad:#b4233f; --bad-soft:#fbeef1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);
+    padding-bottom:14px;margin-bottom:34px}
+  .top h1{font-size:20px;letter-spacing:.5px}
+  .top .est{font-size:12px;color:var(--sub)}
+
+  .lead{max-width:660px;margin-bottom:46px}
+  .lead .s{font-size:11px;letter-spacing:3px;color:var(--acc);font-weight:600}
+  .lead h2{font-size:26px;font-weight:800;line-height:1.45;margin:10px 0 6px}
+  .lead .hl{color:var(--acc)}
+  .lead p{font-size:14.5px;color:var(--sub)}
+  .lead .tw{display:flex;gap:28px;margin-top:20px;flex-wrap:wrap}
+  .lead .tw b{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-bottom:2px}
+  .lead .tw span{font-size:14px}
+
+  section{margin-bottom:44px}
+  .sechead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sechead .no{font-size:11px;font-weight:800;color:var(--acc);border:1px solid var(--acc-line);padding:2px 9px;border-radius:999px}
+  .sechead h3{font-size:17px;font-weight:800}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+
+  .cols{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  .tree{background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-family:var(--mono);
+    font-size:13.5px;line-height:2;overflow-x:auto;white-space:pre}
+  .tree .cmt{color:#a4aab8}
+  .tree .must{color:var(--acc);font-weight:700}
+  .rt{font-size:11px;font-family:inherit;background:var(--acc);color:#fff;border-radius:4px;padding:0 6px;margin-left:8px;vertical-align:2px}
+  .op{font-size:11px;font-family:inherit;color:var(--sub);border:1px solid var(--line);border-radius:4px;padding:0 6px;margin-left:8px;vertical-align:2px}
+  .tree .in{color:var(--sub)}
+  .side{display:flex;flex-direction:column;gap:10px}
+  .side .card{padding:14px 16px}
+  .side .card b{font-size:14px;display:block;margin-bottom:2px}
+  .side .card p{font-size:12.5px;color:var(--sub)}
+  .side .card code{font-family:var(--mono);font-size:12px;background:#f1f2f6;border-radius:4px;padding:0 5px}
+
+  .loc{display:grid;gap:10px}
+  .loc .card{padding:13px 18px;display:flex;gap:14px;align-items:baseline}
+  .loc .tag{font-size:11px;font-weight:800;flex:none;width:52px;text-align:center;padding:2px 0;border-radius:6px}
+  .loc .tag.u{background:var(--acc-soft);color:var(--acc)}
+  .loc .tag.p{background:#f1f2f6;color:var(--sub)}
+  .loc code{font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .loc p{font-size:12.5px;color:var(--sub)}
+  .loc .row{padding:3px 0}
+
+  .strip{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.strip{grid-template-columns:1fr}}
+  .strip .card{padding:18px 20px}
+  .strip h4{font-size:15px;margin-bottom:6px;font-weight:800}
+  .strip p{font-size:13px;color:var(--sub);margin-bottom:10px}
+  .lv{display:flex;gap:18px;font-size:13px}
+  .lv span b{font-weight:800}
+  .lv .h{color:var(--bad)}.lv .m{color:#a15c07}.lv .s{color:var(--ok)}
+  .tri{font-size:13.5px;color:var(--sub);line-height:2.1}
+  .tri b{color:var(--ink)}
+  svg text{font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+
+  /* ---- quiz : 分层自适应 ---- */
+  .quiz{padding:22px 24px}
+  .qtop{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .qcnt{font-size:13px;color:var(--sub);font-weight:600;white-space:nowrap}
+  .qcnt b{font-size:15px;color:var(--ink)}
+  .track{flex:1;min-width:80px;height:5px;background:#edeff4;border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;width:14%;background:var(--acc);border-radius:3px;transition:width .3s}
+  .status{display:flex;align-items:center;gap:14px;margin:4px 0 16px;font-size:12px;color:var(--sub);flex-wrap:wrap}
+  .dlv{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .cells{display:inline-flex;gap:3px}
+  .cells i{width:16px;height:7px;border-radius:2px;background:#dcdfe8}
+  .cells i.on{background:var(--acc)}
+  .cells i.hot{background:var(--acc);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--acc-line)}
+  .streak{font-weight:700;color:var(--acc)}
+  .qtitle{font-size:16px;font-weight:800;margin-bottom:16px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);
+    border-radius:11px;padding:11px 14px;background:#fff;cursor:pointer;font-family:inherit;font-size:14px;
+    color:var(--ink);transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--acc)}
+  .opt .ab{color:var(--sub);font-weight:700;font-size:13px;width:16px;flex:none}
+  .opt.good{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.good .ab{color:var(--ok)}
+  .opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.bad .ab{color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .exp{display:none;margin-top:12px;padding:11px 14px;border-radius:10px;font-size:13.5px;line-height:1.6}
+  .exp.show{display:block}
+  .exp.ok{background:var(--ok-soft);color:#0d5c39}
+  .exp.no{background:var(--bad-soft);color:#8a1d34}
+  .nextline{display:none;margin-top:14px;justify-content:flex-end}
+  .nextline.show{display:flex}
+  .btn{border:none;border-radius:9px;padding:8px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .gonext{background:var(--acc);color:#fff}
+  .gonext:hover{filter:brightness(1.06)}
+
+  .res{display:none;text-align:center;padding:26px 10px 8px}
+  .ring{width:120px;height:120px;margin:0 auto 18px;border-radius:50%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;border:8px solid var(--acc-soft)}
+  .ring b{font-size:30px;font-weight:800;color:var(--acc);line-height:1.2}
+  .ring span{font-size:12px;color:var(--sub)}
+  .res h2{font-size:20px;margin-bottom:6px}
+  .res .vt{font-size:13.5px;color:var(--sub);max-width:430px;margin:0 auto}
+  .res .again{margin-top:18px}
+  .resc{margin:20px auto 0;max-width:500px;text-align:left}
+  .resc .tl{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:6px}
+  .resc .c{font-size:13px;color:var(--sub)}
+  .resc .c b{color:var(--ink)}
+
+  /* ---- sources ---- */
+  .sources{border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+  .sources h3{font-size:14px;font-weight:800;margin-bottom:10px}
+  .src{display:flex;gap:10px;padding:5px 0;font-size:13px;align-items:baseline}
+  .src .n{color:var(--acc);font-weight:800;flex:none}
+  .src a{color:var(--acc);text-decoration:none;word-break:break-all}
+  .src a:hover{text-decoration:underline}
+  .src .w{color:var(--sub);font-size:12px}
+  footer{margin-top:16px;font-size:11.5px;color:#a8aebc;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>Agent Skill 速成</h1>
+    <span class="est">读图约 40 秒 · 自适应测验 2–7 题</span>
+  </div>
+
+  <!-- 开篇 -->
+  <div class="lead">
+    <div class="s">Core Fact · 先纠一个普遍误解</div>
+    <h2>Skill 不是「一个文件」，<br>而是<span class="hl">一个文件夹（目录）</span></h2>
+    <p>把一套技能经验装进一个目录：目录名即技能名，里面必有一个 SKILL.md 当"总指挥"。</p>
+    <div class="tw">
+      <span><b>本质</b>一个文件夹</span>
+      <span><b>核心</b>SKILL.md</span>
+      <span><b>装入</b>.workbuddy/skills/</span>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="sechead"><span class="no">01</span><h3>Skill 目录长什么样</h3></div>
+    <div class="cols">
+      <div class="tree">pdf-helper/           <span class="cmt">← 目录名 = 技能名</span>
+├── <span class="must">SKILL.md</span>        <span class="rt">必需</span>
+│   ├── frontmatter：name · description
+│   └── 正文：分步操作指令
+├── <span class="in">scripts/</span>      <span class="op">可选</span>
+│   └── rotate.py
+├── <span class="in">references/</span>   <span class="op">可选</span>
+│   └── spec.md
+└── <span class="in">assets/</span>       <span class="op">可选</span>
+    └── logo.png</div>
+      <div class="side">
+        <div class="card"><b>必需：只有 1 个文件</b>
+          <p><code>SKILL.md</code> —— 头部 YAML 元信息 + 正文步骤，AI 的"操作手册"。</p></div>
+        <div class="card"><b>可选：3 个配套目录</b>
+          <p><code>scripts/</code> 脚本 · <code>references/</code> 参考资料 · <code>assets/</code> 模板素材，按需添加。</p></div>
+        <div class="card"><b>SKILL.md 的头部元信息</b>
+          <p><code>name</code> 技能名 · <code>description</code> 带触发词的介绍 —— 决定 AI 何时认出并调用。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sechead"><span class="no">02</span><h3>技能目录放进哪里</h3></div>
+    <div class="loc">
+      <div class="card">
+        <span class="tag u">用户级</span>
+        <div><code>~/.workbuddy/skills/&lt;技能名&gt;/</code>
+          <p class="row">所有项目通用 —— 个人技能放这里。</p></div>
+      </div>
+      <div class="card">
+        <span class="tag p">项目级</span>
+        <div><code>&lt;项目&gt;/.workbuddy/skills/&lt;技能名&gt;/</code>
+          <p class="row">跟随仓库，协作者共享 —— 团队约定放这里。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sechead"><span class="no">03</span><h3>一次自动触发</h3></div>
+    <div class="card" style="padding:18px 14px">
+      <svg viewBox="0 0 760 92" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#c3c9d8"/></marker></defs>
+        <rect x="0"  y="16" width="150" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="75"  y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">提出需求</text>
+        <text x="75"  y="65" text-anchor="middle" font-size="11" fill="#8a909c">「帮我做一份…」</text>
+        <line x1="152" y1="46" x2="200" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="205" y="16" width="150" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="280" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">读 description</text>
+        <text x="280" y="65" text-anchor="middle" font-size="11" fill="#8a909c">触发词对上号</text>
+        <line x1="357" y1="46" x2="405" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="410" y="16" width="150" height="60" rx="13" fill="#f4f6fd" stroke="#3d5af1"/>
+        <text x="485" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">读目录里的 SKILL.md</text>
+        <text x="485" y="65" text-anchor="middle" font-size="11" fill="#8a909c">照步骤执行</text>
+        <line x1="562" y1="46" x2="610" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="615" y="16" width="145" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="687" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">稳定交付</text>
+        <text x="687" y="65" text-anchor="middle" font-size="11" fill="#8a909c">不再靠临场发挥</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sechead"><span class="no">04</span><h3>两条原则</h3></div>
+    <div class="strip">
+      <div class="card">
+        <h4>装第三方：先审计</h4>
+        <p>从网络下载的技能包可能夹带风险脚本，安装前分级把关：</p>
+        <div class="lv">
+          <span><b class="h">P0</b> 危险，别装</span>
+          <span><b class="m">P1</b> 谨慎确认</span>
+          <span><b class="s">P2</b> 安全可装</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4>自己的技能：三字诀</h4>
+        <div class="tri">
+          完成后 <b>积累</b> —— 沉淀成技能目录<br>
+          用完后 <b>反思</b> —— 找改进空间<br>
+          发现错 <b>修正</b> —— 当场改不拖延
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 分层自测 -->
+  <section>
+    <div class="sechead"><span class="no">05</span><h3>自测 · 答对升档 答错降档</h3></div>
+    <div class="card quiz">
+      <div id="qview">
+        <div class="qtop">
+          <span class="qcnt">第 <b id="qidx">1</b> / 7 题</span>
+          <div class="track"><i id="pfill"></i></div>
+        </div>
+        <div class="status">
+          <span class="dlv">难度
+            <span class="cells" id="cells"><i class="on"></i><i class="on"></i><i></i></span>
+            <span id="dlvtx">进阶</span>
+          </span>
+          <span>连对 <b class="streak" id="streak">×0</b></span>
+          <span id="hint" style="color:#a4aab8">答对升难度 · 答错降难度 · 连对 3 题通关</span>
+        </div>
+        <div class="qtitle" id="qtext"></div>
+        <div class="opts" id="opts"></div>
+        <div class="exp" id="exp"></div>
+        <div class="nextline" id="nxtline"><button class="btn gonext" id="nxt">下一题 →</button></div>
+      </div>
+      <div class="res" id="res">
+        <div class="ring"><b id="rtitle">评级</b><span id="rsub">难度评级</span></div>
+        <h2 id="rh">自测完成</h2>
+        <p class="vt" id="vt"></p>
+        <div class="resc">
+          <div class="tl">作答轨迹</div>
+          <div class="c" id="trail"></div>
+        </div>
+        <button class="btn gonext again" id="again">再测一次</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sources -->
+  <div class="sources">
+    <h3>资料来源</h3>
+    <div class="src"><span class="n">1</span><div><a href="https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market" target="_blank" rel="noopener">WorkBuddy 官方文档 · 技能(Skills) 页</a><br><span class="w">依据：技能(Skill) 定义、添加/启用/卸载、第三方安全提示（P0/P1/P2 分级为安装审计约定）</span></div></div>
+    <div class="src"><span class="n">2</span><div><a href="https://www.workbuddy.cn/docs/workbuddy/Overview" target="_blank" rel="noopener">WorkBuddy 文档首页</a><br><span class="w">依据：功能范围与阅读路径</span></div></div>
+    <div class="src"><span class="n">3</span><div><a href="https://cloud.tencent.com/developer/techpedia/2610/20530" target="_blank" rel="noopener">腾讯云开发者百科 · WorkBuddy 技能包与发现机制</a><br><span class="w">依据：技能包以文件夹存储、每个 Skill 是含 SKILL.md 的目录</span></div></div>
+    <div class="src"><span class="n">4</span><div>本机内置官方技能 <code style="font-family:var(--mono);font-size:12px;background:#f1f2f6;border-radius:4px;padding:0 5px">skill-creator/SKILL.md</code><br><span class="w">依据：Skill 标准目录结构（SKILL.md 必需，scripts/references/assets 可选；frontmatter 需 name/description）</span></div></div>
+  </div>
+
+  <footer>内容依据上述官方文档编写 · 本页存于当前仓库</footer>
+</div>
+
+<script>
+/* ===== 分层自适应题库：1 初学 / 2 进阶 / 3 熟练 ===== */
+const LVL=["初学","进阶","熟练"];
+const BANK=[
+  /* 初学 */
+  {t:"一个 Skill 在磁盘上以什么形式存在？",
+   o:["单个 SKILL.md 文件","一个文件夹（目录）","一个 .zip 安装包","一个可执行脚本"],
+   a:1,e:"目录名即技能名，SKILL.md 只是目录里那个必需的『总指挥』；.zip 只是分发格式，装入后即解成文件夹。",lv:1},
+  {t:"技能文件夹里唯一『必需』的文件是？",
+   o:["SKILL.md","README.md","package.json","main.py"],
+   a:0,e:"必需且只有 SKILL.md；scripts/、references/、assets/ 都是可选配套。",lv:1},
+  {t:"想让自己所有项目都能用某技能，应把技能目录放进？",
+   o:["~/.workbuddy/skills/","桌面","系统临时目录","任意位置"],
+   a:0,e:"~/.workbuddy/skills/ 是用户级=全局通用；项目内 .workbuddy/skills/ 只在该仓库生效。",lv:1},
+  /* 进阶 */
+  {t:"让 AI 自动认出该用这个技能，靠 SKILL.md 的哪部分？",
+   o:["正文里的步骤","frontmatter 的 description 触发词","目录名长度","脚本文件名"],
+   a:1,e:"description 写在文件头部 YAML 里，触发词写得越准，AI 越不会认错。",lv:2},
+  {t:"下列哪个【不是】 SKILL.md 的可选配套目录？",
+   o:["scripts/","references/","requirements.txt","assets/"],
+   a:2,e:"可选配套只有三类：scripts 脚本、references 参考资料、assets 素材。",lv:2},
+  {t:"一个技能包被分发成 .zip 发给别人后，对方导入得到的是？",
+   o:["只能解出 1 个 .md 文件","还原成一个技能文件夹","一段可执行代码","一个配置项"],
+   a:1,e:"zip 是打包分发格式，导入即解包还原成含 SKILL.md 的技能目录。",lv:2},
+  /* 熟练 */
+  {t:"想让技能被稳定、准确地自动触发，description 应该？",
+   o:["写清适用场景与触发关键词","越短越好只写名字","堆满表情符号","写作者署名"],
+   a:0,e:"description 决定何时调用：把任务类型、触发场景关键词写具体，模型才认得准。",lv:3},
+  {t:"技能里的大段参考文档（几万字规格书）最佳放法是？",
+   o:["全部塞进 SKILL.md","单独放 references/ 子文件，需要时再读","复制进每题解析","放到 assets/"],
+   a:1,e:"渐进披露原则：SKILL.md 保持精简，大段资料放 references/，用到才加载，省上下文。",lv:3},
+  {t:"维护技能时发现某条指令已过时，正确动作是？",
+   o:["当场修正","等下次用到再改","直接删掉整个技能","加注释说明但不改"],
+   a:0,e:"维护铁律=积累·反思·修正：发现即改，技能才不会腐化。",lv:3}
+];
+
+let cur=null,lvl=2,streak=0,rounds=0,used=new Set(),finished=false;
+let trail=[]; // 作答轨迹 [{q,ok,lvl}]
+const $v=document.getElementById('qview'),$r=document.getElementById('res');
+const elIdx=document.getElementById('qidx'),elPf=document.getElementById('pfill'),
+      elCell=[...document.getElementById('cells').children],elDlv=document.getElementById('dlvtx'),
+      elStreak=document.getElementById('streak'),elQ=document.getElementById('qtext'),
+      elOpts=document.getElementById('opts'),elExp=document.getElementById('exp'),
+      nxtline=document.getElementById('nxtline'),nxt=document.getElementById('nxt');
+
+function paintStatus(){
+  elIdx.textContent=Math.min(rounds+1,7);
+  elPf.style.width=(rounds/7*100)+'%';
+  elCell.forEach((c,i)=>c.className=i<lvl?'on':'');
+  if(streak>0)elCell[lvl-1].className+=' hot';
+  elDlv.textContent=LVL[lvl-1];
+  elStreak.textContent='×'+streak;
+}
+function nextQ(){
+  let c=BANK.filter(q=>!used.has(q)&&q.lv===lvl);
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.min(3,lvl+1));
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.max(1,lvl-1));
+  if(!c.length){finish();return;}
+  cur=c[0];used.add(cur);rounds++;
+  paintStatus();
+  elQ.textContent=cur.t;
+  elOpts.innerHTML='';
+  cur.o.forEach((txt,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='opt';
+    b.innerHTML='<span class="ab">'+String.fromCharCode(65+i)+'</span><span>'+txt+'</span>';
+    b.onclick=()=>answer(i);elOpts.appendChild(b);
+  });
+  elExp.className='exp';elExp.textContent='';nxtline.className='nextline';
+  document.getElementById('hint').style.visibility='visible';
+}
+function answer(i){
+  if(finished)return;
+  const right=i===cur.a;
+  [...elOpts.children].forEach((o,j)=>{o.disabled=true;
+    if(j===cur.a)o.classList.add('good');else if(j===i)o.classList.add('bad');});
+  if(right){streak++;if(lvl<3)lvl++;}
+  else{streak=0;if(lvl>1)lvl--;}
+  trail.push({q:cur.t,ok:right,lvl});
+  elExp.className='exp show '+(right?'ok':'no');
+  elExp.innerHTML=(right?'答对 · 难度上升，':'答错 · 难度下调，正确答案 '+String.fromCharCode(65+cur.a)+'。')+cur.e;
+  paintStatus();
+  document.getElementById('hint').style.visibility='hidden';
+  nxtline.className='nextline show';
+  if(streak>=3||rounds>=7){nxt.textContent='查看评级 →';}else{nxt.textContent='下一题 →';}
+}
+nxt.onclick=()=>{ if(streak>=3||rounds>=7)finish(); else nextQ(); };
+function finish(){
+  finished=true; $v.style.display='none';$r.style.display='block';
+  const pass=streak>=3;
+  const grade=pass?3:lvl;
+  document.getElementById('rtitle').textContent=pass?'熟练通关':'评级 '+LVL[grade-1];
+  document.getElementById('rsub').textContent='共答 '+rounds+' 题 · 最高难度 '+LVL[Math.max(...trail.map(t=>t.lvl),lvl)-1];
+  const ok=trail.filter(t=>t.ok).length;
+  let h,v;
+  if(pass){h='连续答对 3 题，通关';v='恭喜！难度一路升到「熟练」仍稳定作答，核心概念已经掌握。可以打开 ~/.workbuddy/skills/ 找真实技能目录验证。';}
+  else if(grade===3){h='答对 '+ok+'/'+rounds+'，稳住熟练';v='能在最难档坚持，但中间出现过失误。回看 03 触发与 04 原则，再冲一次满分通关。';}
+  else if(grade===2){h='评级：进阶';v='基础扎实，但高频知识点还不够稳。建议重读 01 目录结构，然后直接再测。';}
+  else{h='评级：初学';v='先别急着刷题 —— 把 01 Skill 目录结构、02 存放位置重新读一遍，再回来测。';}
+  document.getElementById('rh').textContent=h;
+  document.getElementById('vt').textContent=v;
+  const box=document.getElementById('trail');
+  box.innerHTML=trail.map((t,i)=>
+    '<div style="padding:2px 0"><b style="color:'+(t.ok?'#137a4b':'#b4233f')+'">'+(t.ok?'✓':'✗')+'</b> Q'+(i+1)+' ['+LVL[t.lvl-1]+'] '+t.q.slice(0,18)+(t.q.length>18?'…':'')+'</div>').join('');
+}
+document.getElementById('again').onclick=()=>{
+  lvl=2;streak=0;rounds=0;used=new Set();finished=false;trail=[];nxt.textContent='下一题 →';
+  $v.style.display='block';$r.style.display='none';nextQ();
+};
+nextQ();
+</script>
+</body>
+</html>

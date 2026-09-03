@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 一分钟速成</title>
+<style>
+  /* 极简：白 / 灰 / 一主蓝 + 判题两语义色。知识点以 Anthropic / Google / IBM 官方文档为据 */
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2430; --sub:#6a7180;
+    --line:#e6e8ee; --acc:#3d5af1; --acc-soft:#eef1fd; --acc-line:#cfd7f8;
+    --mono:"Cascadia Code",Consolas,"Courier New",monospace;
+    --ok:#137a4b; --ok-soft:#e8f5ef; --bad:#b4233f; --bad-soft:#fbeef1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:800px;margin:0 auto;padding:40px 20px 60px}
+
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);
+    padding-bottom:14px;margin-bottom:34px}
+  .top h1{font-size:20px;letter-spacing:.5px}
+  .top .est{font-size:12px;color:var(--sub)}
+
+  .lead{max-width:660px;margin-bottom:46px}
+  .lead .s{font-size:11px;letter-spacing:3px;color:var(--acc);font-weight:600}
+  .lead h2{font-size:26px;font-weight:800;line-height:1.45;margin:10px 0 6px}
+  .lead .hl{color:var(--acc)}
+  .lead p{font-size:14.5px;color:var(--sub)}
+  .lead .tw{display:flex;gap:28px;margin-top:20px;flex-wrap:wrap}
+  .lead .tw b{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-bottom:2px}
+  .lead .tw span{font-size:14px}
+
+  section{margin-bottom:44px}
+  .sechead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sechead .no{font-size:11px;font-weight:800;color:var(--acc);border:1px solid var(--acc-line);padding:2px 9px;border-radius:999px}
+  .sechead h3{font-size:17px;font-weight:800}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+
+  .cols{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+  @media(max-width:640px){.cols{grid-template-columns:1fr}}
+  .tree{background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-family:var(--mono);
+    font-size:13.5px;line-height:2.05;overflow-x:auto;white-space:pre}
+  .tree .cmt{color:#a4aab8}
+  .tree .must{color:var(--acc);font-weight:700}
+  .rt{font-size:11px;font-family:inherit;background:var(--acc);color:#fff;border-radius:4px;padding:0 6px;margin-left:8px;vertical-align:2px}
+  .side{display:flex;flex-direction:column;gap:10px}
+  .side .card{padding:14px 16px}
+  .side .card b{font-size:14px;display:block;margin-bottom:2px}
+  .side .card p{font-size:12.5px;color:var(--sub)}
+  .side .card code{font-family:var(--mono);font-size:12px;background:#f1f2f6;border-radius:4px;padding:0 5px}
+
+  .strip{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.strip{grid-template-columns:1fr}}
+  .strip .card{padding:18px 20px}
+  .strip h4{font-size:15px;margin-bottom:6px;font-weight:800}
+  .strip p{font-size:13px;color:var(--sub);margin-bottom:10px}
+  .tri{font-size:13.5px;color:var(--sub);line-height:2.1}
+  .tri b{color:var(--ink)}
+  svg text{font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+
+  /* ---- quiz : 分层自适应 ---- */
+  .quiz{padding:22px 24px}
+  .qtop{display:flex;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .qcnt{font-size:13px;color:var(--sub);font-weight:600;white-space:nowrap}
+  .qcnt b{font-size:15px;color:var(--ink)}
+  .track{flex:1;min-width:80px;height:5px;background:#edeff4;border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;width:14%;background:var(--acc);border-radius:3px;transition:width .3s}
+  .status{display:flex;align-items:center;gap:14px;margin:4px 0 16px;font-size:12px;color:var(--sub);flex-wrap:wrap}
+  .dlv{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .cells{display:inline-flex;gap:3px}
+  .cells i{width:16px;height:7px;border-radius:2px;background:#dcdfe8}
+  .cells i.on{background:var(--acc)}
+  .cells i.hot{background:var(--acc);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--acc-line)}
+  .streak{font-weight:700;color:var(--acc)}
+  .qtitle{font-size:16px;font-weight:800;margin-bottom:16px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);
+    border-radius:11px;padding:11px 14px;background:#fff;cursor:pointer;font-family:inherit;font-size:14px;
+    color:var(--ink);transition:border-color .12s,background .12s}
+  .opt:hover{border-color:var(--acc)}
+  .opt .ab{color:var(--sub);font-weight:700;font-size:13px;width:16px;flex:none}
+  .opt.good{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.good .ab{color:var(--ok)}
+  .opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.bad .ab{color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .exp{display:none;margin-top:12px;padding:11px 14px;border-radius:10px;font-size:13.5px;line-height:1.6}
+  .exp.show{display:block}
+  .exp.ok{background:var(--ok-soft);color:#0d5c39}
+  .exp.no{background:var(--bad-soft);color:#8a1d34}
+  .nextline{display:none;margin-top:14px;justify-content:flex-end}
+  .nextline.show{display:flex}
+  .btn{border:none;border-radius:9px;padding:8px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .gonext{background:var(--acc);color:#fff}
+  .gonext:hover{filter:brightness(1.06)}
+
+  .res{display:none;text-align:center;padding:26px 10px 8px}
+  .ring{width:120px;height:120px;margin:0 auto 18px;border-radius:50%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;border:8px solid var(--acc-soft)}
+  .ring b{font-size:30px;font-weight:800;color:var(--acc);line-height:1.2}
+  .ring span{font-size:12px;color:var(--sub)}
+  .res h2{font-size:20px;margin-bottom:6px}
+  .res .vt{font-size:13.5px;color:var(--sub);max-width:430px;margin:0 auto}
+  .res .again{margin-top:18px}
+  .resc{margin:20px auto 0;max-width:500px;text-align:left}
+  .resc .tl{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:6px}
+  .resc .c{font-size:13px;color:var(--sub)}
+  .resc .c b{color:var(--ink)}
+
+  /* ---- sources ---- */
+  .sources{border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+  .sources h3{font-size:14px;font-weight:800;margin-bottom:10px}
+  .src{display:flex;gap:10px;padding:5px 0;font-size:13px;align-items:baseline}
+  .src .n{color:var(--acc);font-weight:800;flex:none}
+  .src a{color:var(--acc);text-decoration:none;word-break:break-all}
+  .src a:hover{text-decoration:underline}
+  .src .w{color:var(--sub);font-size:12px}
+  footer{margin-top:16px;font-size:11.5px;color:#a8aebc;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <h1>AI Agent 速成</h1>
+    <span class="est">读图约 50 秒 · 自适应测验 2–7 题</span>
+  </div>
+
+  <!-- 开篇 -->
+  <div class="lead">
+    <div class="s">Core Fact · 先纠一个普遍误解</div>
+    <h2>Agent 不是「更会聊天的模型」，<br>而是<span class="hl">能自己动手完成任务的应用</span></h2>
+    <p>模型只会「说」，Agent 会「做」：LLM 当大脑做规划，工具当手脚连接外部世界，在「思考 → 行动 → 观察」的循环里自主推进，直到把目标做完。</p>
+    <div class="tw">
+      <span><b>本质</b>一个应用</span>
+      <span><b>三件套</b>模型 · 工具 · 编排层</span>
+      <span><b>分水岭</b>自主决策 + 调用工具</span>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="sechead"><span class="no">01</span><h3>Agent 的内部构造</h3></div>
+    <div class="cols">
+      <div class="tree">ai-agent/                <span class="cmt">← 一个能自主做事的应用</span>
+├── <span class="must">model</span>            <span class="rt">必需</span>
+│   └── LLM：推理 · 规划 · 决策
+├── <span class="must">tools</span>            <span class="rt">必需</span>
+│   └── API/搜索/代码：连接外部世界
+├── <span class="must">orchestration</span>    <span class="rt">必需</span>
+│   └── 主持循环：维护记忆与状态
+│   └── 思考→行动→观察→再思考
+└── stop condition
+    └── 目标达成 / 最大步数 才停下</div>
+      <div class="side">
+        <div class="card"><b>模型 model = 大脑</b>
+          <p>大语言模型负责理解任务、拆解步骤、决定「下一步做什么」。</p></div>
+        <div class="card"><b>工具 tools = 手脚</b>
+          <p>搜索、API、执行代码……模型靠它获取实时信息并真正改变外部世界。</p></div>
+        <div class="card"><b>编排层 orchestration = 神经</b>
+          <p>驱动「思考→行动→观察」循环，管理记忆与状态，直到目标达成或触发停止条件。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sechead"><span class="no">02</span><h3>别混淆：与聊天 AI、Workflow 的区别</h3></div>
+    <div class="strip">
+      <div class="card">
+        <h4>聊天 AI vs Agent</h4>
+        <p>聊天 AI 是「有问有答」：单次生成回复，一般不调工具、不改世界。Agent 带着目标自己规划多步、调用工具执行，把「聊天」变成「办事」。</p>
+      </div>
+      <div class="card">
+        <h4>Workflow vs Agent</h4>
+        <p>两者同属「智能体类系统(agentic)」，真正的分界是<b>流程控制权</b>：Workflow 由预定义代码路径编排（像有轨列车）；Agent 由 LLM 动态引导流程与工具使用（像自动驾驶）。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sechead"><span class="no">03</span><h3>一次任务循环</h3></div>
+    <div class="card" style="padding:18px 14px">
+      <svg viewBox="0 0 760 124" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#c3c9d8"/></marker></defs>
+        <rect x="0"    y="16" width="152" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="76"   y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">接收目标</text>
+        <text x="76"   y="65" text-anchor="middle" font-size="11" fill="#8a909c">用户指令 / 事件</text>
+        <line x1="154" y1="46" x2="202" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="207"  y="16" width="152" height="60" rx="13" fill="#f4f6fd" stroke="#3d5af1"/>
+        <text x="283"  y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">思考 · 规划</text>
+        <text x="283"  y="65" text-anchor="middle" font-size="11" fill="#8a909c">LLM 决策下一步 / 选工具</text>
+        <line x1="361" y1="46" x2="409" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="414"  y="16" width="152" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="490"  y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">行动 · 调工具</text>
+        <text x="490"  y="65" text-anchor="middle" font-size="11" fill="#8a909c">搜索 / API / 执行代码</text>
+        <line x1="568" y1="46" x2="616" y2="46" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="621"  y="16" width="139" height="60" rx="13" fill="#fff" stroke="#e6e8ee"/>
+        <text x="690"  y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2430">观察 · 反馈</text>
+        <text x="690"  y="65" text-anchor="middle" font-size="11" fill="#8a909c">把结果写回上下文</text>
+        <line x1="690" y1="78" x2="283" y2="102" stroke="#c3c9d8" stroke-width="2" marker-end="url(#ar)"/>
+        <text x="486"  y="116" text-anchor="middle" font-size="11" fill="#a4aab8">循环：若未达成目标则回到「思考」——直到目标完成或触发停止条件</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sechead"><span class="no">04</span><h3>两条原则（Anthropic）</h3></div>
+    <div class="strip">
+      <div class="card">
+        <h4>原则一：别轻易造 Agent</h4>
+        <p>从最简单的方案开始：单次 LLM 调用 + 检索 + 示例往往已够用；固定、可预测的任务用 Workflow 更稳更省。Agent 自主性高，但代价是更高成本与错误累积风险——先在沙盒中充分测试并配好护栏。</p>
+      </div>
+      <div class="card">
+        <h4>原则二：打磨 Agent 三要诀</h4>
+        <div class="tri">
+          <b>简单</b> —— 用可组合的小模式<br>
+          <b>透明</b> —— 展示它的规划步骤<br>
+          <b>打磨工具</b> —— 文档清晰 + 充分测试
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 分层自测 -->
+  <section>
+    <div class="sechead"><span class="no">05</span><h3>自测 · 答对升档 答错降档</h3></div>
+    <div class="card quiz">
+      <div id="qview">
+        <div class="qtop">
+          <span class="qcnt">第 <b id="qidx">1</b> / 7 题</span>
+          <div class="track"><i id="pfill"></i></div>
+        </div>
+        <div class="status">
+          <span class="dlv">难度
+            <span class="cells" id="cells"><i class="on"></i><i class="on"></i><i></i></span>
+            <span id="dlvtx">进阶</span>
+          </span>
+          <span>连对 <b class="streak" id="streak">×0</b></span>
+          <span id="hint" style="color:#a4aab8">答对升难度 · 答错降难度 · 连对 3 题通关</span>
+        </div>
+        <div class="qtitle" id="qtext"></div>
+        <div class="opts" id="opts"></div>
+        <div class="exp" id="exp"></div>
+        <div class="nextline" id="nxtline"><button class="btn gonext" id="nxt">下一题 →</button></div>
+      </div>
+      <div class="res" id="res">
+        <div class="ring"><b id="rtitle">评级</b><span id="rsub">难度评级</span></div>
+        <h2 id="rh">自测完成</h2>
+        <p class="vt" id="vt"></p>
+        <div class="resc">
+          <div class="tl">作答轨迹</div>
+          <div class="c" id="trail"></div>
+        </div>
+        <button class="btn gonext again" id="again">再测一次</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sources -->
+  <div class="sources">
+    <h3>资料来源</h3>
+    <div class="src"><span class="n">1</span><div><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Anthropic 官方工程博客 · Building effective agents</a><br><span class="w">依据：Agent 与 Workflow 的架构区别、何时该用 Agent、Agent 的成本与错误累积风险、沙盒测试与护栏、三条设计原则（简单/透明/打磨工具 ACI）</span></div></div>
+    <div class="src"><span class="n">2</span><div><a href="https://www.kaggle.com/whitepaper-introduction-to-agents" target="_blank" rel="noopener">Google 官方白皮书（Kaggle）· Introduction to Agents</a><br><span class="w">依据：Agent 是「会规划并采取行动的应用」、认知架构三组件（模型/工具/编排层）、思考-行动-观察循环与停止条件</span></div></div>
+    <div class="src"><span class="n">3</span><div><a href="https://www.ibm.com/architectures/patterns/agentic-ai" target="_blank" rel="noopener">IBM 官方架构指南 · Agentic AI Systems</a><br><span class="w">依据：Agent 内部组件（Planning and Reflection / Tool Integration / Memory / Execution）与自主规划执行的描述</span></div></div>
+  </div>
+
+  <footer>内容依据上述官方文档编写 · 本页存于当前工作区</footer>
+</div>
+
+<script>
+/* ===== 分层自适应题库：1 初学 / 2 进阶 / 3 熟练 ===== */
+const LVL=["初学","进阶","熟练"];
+const BANK=[
+  /* 初学 */
+  {t:"想一句话说清「AI Agent」与「普通聊天 AI」的本质差别，最准确的是？",
+   o:["聊天 AI 更聪明、能记住更多上下文","Agent 是能自主规划多步任务并调用工具完成的『应用』，聊天 AI 通常只生成回答","Agent 是某个大语言模型的名字","Agent 就是能联网搜资料的回答框"],
+   a:1,e:"Agent 的分水岭不是『更会聊』而是『会做』：带着目标自主规划、用工具行动并循环推进；只会生成文字的对话系统通常还不算 Agent。(依据 1/2)",lv:1},
+  {t:"Agent 架构中充当『大脑』、负责理解任务与规划步骤的是？",
+   o:["编排层脚本","大语言模型（LLM）","工具 API","数据库"],
+   a:1,e:"LLM 负责推理、规划与决策，是中央『决策者』；工具与编排层都围绕它运转。(依据 2/3)",lv:1},
+  {t:"Agent 凭什么能获取实时数据、真正『动手』影响外部世界？",
+   o:["靠更大的训练数据集","靠调用工具（API/搜索/代码执行等）","靠性能更强的电脑","靠人类在旁边逐条执行"],
+   a:1,e:"工具是 Agent 连接外部世界的『手脚』；模型训练数据本身是静态的，无法自行触达外部系统。(依据 2)",lv:1},
+  /* 进阶 */
+  {t:"Google 白皮书中，Agent 认知架构的三大核心组件是？",
+   o:["模型 · 工具 · 编排层","输入 · 输出 · 缓存","CPU · 内存 · 硬盘","提示词 · 微调 · 部署"],
+   a:0,e:"Model 提供推理决策、Tools 连接外部世界、Orchestration 层主持循环并维护记忆与状态。(依据 2)",lv:2},
+  {t:"按 Anthropic 的划分，「Workflow 工作流」与「Agent 智能体」的本质区别是？",
+   o:["一个免费一个收费","流程控制权：Workflow 由预定义代码路径编排，Agent 由 LLM 动态引导自身流程与工具使用","一个能联网一个不能联网","一个用大模型一个用小模型"],
+   a:1,e:"两者同属智能体类系统(agentic)，分界在于控制权：Workflow 像有轨列车，Agent 像自动驾驶，路径由模型动态决定。(依据 1)",lv:2},
+  {t:"Agent 运行时最典型的循环是？",
+   o:["提问 → 回答 → 结束","思考 → 行动 → 观察 → 再思考，直至目标达成或停止","写代码 → 编译 → 报错","训练 → 评估 → 上线"],
+   a:1,e:"编排层以『思考/行动/观察』迭代推进（如 ReAct），直到目标达成或触发停止条件才结束。(依据 2/3)",lv:2},
+  /* 熟练 */
+  {t:"Anthropic 反复强调的工程建议是？",
+   o:["生产环境一定要用复杂的多智能体框架","从最简单的方案开始，仅在复杂度能改善结果时才引入 Agent","Agent 越自主越好，不需要人工介入","工作流已过时，一律改用 Agent"],
+   a:1,e:"最成功的实现多是『简单、可组合』的模式；对固定、可预测的任务，工作流往往更稳定、成本更低。(依据 1)",lv:3},
+  {t:"Agent 自主性的代价之一是错误可能累积。上生产前的推荐做法是？",
+   o:["无需测试，直接上线","在沙盒环境中广泛测试，并配备适当的护栏(guardrails)","只要模型足够强就没有风险","禁止设置任何停止条件"],
+   a:1,e:"官方建议在沙盒中广泛测试并加护栏，同时让规划步骤可见、可观测，以抑制错误累积与越权行为。(依据 1)",lv:3},
+  {t:"想让一个 Agent 更可靠，最值得优先投入打磨的是？",
+   o:["把系统提示词写得越长越好","工具：定义清晰、文档齐全、充分测试（ACI），并让执行步骤透明","把循环次数设到最大","屏蔽所有中间过程"],
+   a:1,e:"工具就是 Agent 对外部世界的『接口』，其设计与文档质量直接决定行为可靠性；三条原则=简单、透明、精心打磨工具。(依据 1)",lv:3}
+];
+
+let cur=null,lvl=2,streak=0,rounds=0,used=new Set(),finished=false;
+let trail=[]; // 作答轨迹 [{q,ok,lvl}]
+const $v=document.getElementById('qview'),$r=document.getElementById('res');
+const elIdx=document.getElementById('qidx'),elPf=document.getElementById('pfill'),
+      elCell=[...document.getElementById('cells').children],elDlv=document.getElementById('dlvtx'),
+      elStreak=document.getElementById('streak'),elQ=document.getElementById('qtext'),
+      elOpts=document.getElementById('opts'),elExp=document.getElementById('exp'),
+      nxtline=document.getElementById('nxtline'),nxt=document.getElementById('nxt');
+
+function paintStatus(){
+  elIdx.textContent=Math.min(rounds+1,7);
+  elPf.style.width=(rounds/7*100)+'%';
+  elCell.forEach((c,i)=>c.className=i<lvl?'on':'');
+  if(streak>0)elCell[lvl-1].className+=' hot';
+  elDlv.textContent=LVL[lvl-1];
+  elStreak.textContent='×'+streak;
+}
+function nextQ(){
+  let c=BANK.filter(q=>!used.has(q)&&q.lv===lvl);
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.min(3,lvl+1));
+  if(!c.length)c=BANK.filter(q=>!used.has(q)&&q.lv===Math.max(1,lvl-1));
+  if(!c.length){finish();return;}
+  cur=c[0];used.add(cur);rounds++;
+  paintStatus();
+  elQ.textContent=cur.t;
+  elOpts.innerHTML='';
+  cur.o.forEach((txt,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='opt';
+    b.innerHTML='<span class="ab">'+String.fromCharCode(65+i)+'</span><span>'+txt+'</span>';
+    b.onclick=()=>answer(i);elOpts.appendChild(b);
+  });
+  elExp.className='exp';elExp.textContent='';nxtline.className='nextline';
+  document.getElementById('hint').style.visibility='visible';
+}
+function answer(i){
+  if(finished)return;
+  const right=i===cur.a;
+  [...elOpts.children].forEach((o,j)=>{o.disabled=true;
+    if(j===cur.a)o.classList.add('good');else if(j===i)o.classList.add('bad');});
+  if(right){streak++;if(lvl<3)lvl++;}
+  else{streak=0;if(lvl>1)lvl--;}
+  trail.push({q:cur.t,ok:right,lvl});
+  elExp.className='exp show '+(right?'ok':'no');
+  elExp.innerHTML=(right?'答对 · 难度上升，':'答错 · 难度下调，正确答案 '+String.fromCharCode(65+cur.a)+'。')+cur.e;
+  paintStatus();
+  document.getElementById('hint').style.visibility='hidden';
+  nxtline.className='nextline show';
+  if(streak>=3||rounds>=7){nxt.textContent='查看评级 →';}else{nxt.textContent='下一题 →';}
+}
+nxt.onclick=()=>{ if(streak>=3||rounds>=7)finish(); else nextQ(); };
+function finish(){
+  finished=true; $v.style.display='none';$r.style.display='block';
+  const pass=streak>=3;
+  const grade=pass?3:lvl;
+  document.getElementById('rtitle').textContent=pass?'熟练通关':'评级 '+LVL[grade-1];
+  document.getElementById('rsub').textContent='共答 '+rounds+' 题 · 最高难度 '+LVL[Math.max(...trail.map(t=>t.lvl),lvl)-1];
+  const ok=trail.filter(t=>t.ok).length;
+  let h,v;
+  if(pass){h='连续答对 3 题，通关';v='恭喜！难度一路升到「熟练」仍稳定作答，Agent 的核心概念已经掌握。可继续读文末资料来源加深理解。';}
+  else if(grade===3){h='答对 '+ok+'/'+rounds+'，稳住熟练';v='能在最难档坚持，但中间出现过失误。回看 03 循环与 04 两条原则，再冲一次满分通关。';}
+  else if(grade===2){h='评级：进阶';v='基础扎实，但高频知识点还不够稳。建议重读 01 内部构造，然后直接再测。';}
+  else{h='评级：初学';v='先别急着刷题 —— 把 01 Agent 内部构造、02 与聊天 AI / Workflow 的区别重新读一遍，再回来测。';}
+  document.getElementById('rh').textContent=h;
+  document.getElementById('vt').textContent=v;
+  const box=document.getElementById('trail');
+  box.innerHTML=trail.map((t,i)=>
+    '<div style="padding:2px 0"><b style="color:'+(t.ok?'#137a4b':'#b4233f')+'">'+(t.ok?'✓':'✗')+'</b> Q'+(i+1)+' ['+LVL[t.lvl-1]+'] '+t.q.slice(0,18)+(t.q.length>18?'…':'')+'</div>').join('');
+}
+document.getElementById('again').onclick=()=>{
+  lvl=2;streak=0;rounds=0;used=new Set();finished=false;trail=[];nxt.textContent='下一题 →';
+  $v.style.display='block';$r.style.display='none';nextQ();
+};
+nextQ();
+</script>
+</body>
+</html>
