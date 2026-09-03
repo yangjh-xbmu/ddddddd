@@ -1,0 +1,608 @@
+{
+  "nodes": [
+    {
+      "id": "overview",
+      "label": "Wiki Overview",
+      "type": "synthesis",
+      "color": "#9C27B0"
+    },
+    {
+      "id": "concepts/CrossReference",
+      "label": "CrossReference",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/DoubleLinking",
+      "label": "DoubleLinking",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/HealthCheck",
+      "label": "HealthCheck",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/KnowledgeRot",
+      "label": "KnowledgeRot",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/LLMWiki",
+      "label": "LLM Wiki",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/LocalDeployment",
+      "label": "LocalDeployment",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "concepts/Quantization",
+      "label": "Quantization",
+      "type": "concept",
+      "color": "#FF9800"
+    },
+    {
+      "id": "entities/Karpathy",
+      "label": "Karpathy",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/LLMWikiAgent",
+      "label": "LLM Wiki Agent",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/Obsidian",
+      "label": "Obsidian",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/ObsidianLLMWikiLocal",
+      "label": "obsidian-llm-wiki-local",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/Ollama",
+      "label": "Ollama",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/Qwen38",
+      "label": "Qwen3.8",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "entities/RAG",
+      "label": "RAG",
+      "type": "entity",
+      "color": "#2196F3"
+    },
+    {
+      "id": "sources/karpathy-llm-wiki访谈",
+      "label": "Karpathy 谈 LLM Wiki：让知识自己长出来",
+      "type": "source",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "sources/llm-wiki调研与选型",
+      "label": "llm-wiki 调研与选型",
+      "type": "source",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "sources/obsidian双链工作流实录",
+      "label": "笔记：Obsidian 双链工作流实录（自用）",
+      "type": "source",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "sources/qwen38本地部署实录",
+      "label": "Qwen3.8 本地部署实录（这台机器）",
+      "type": "source",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "sources/为什么放弃LLM知识库",
+      "label": "我为什么放弃了那个 LLM 知识库（一篇劝退文）",
+      "type": "source",
+      "color": "#4CAF50"
+    },
+    {
+      "id": "syntheses/llm-wiki-值得长期投入吗",
+      "label": "LLM Wiki 值得长期投入吗？",
+      "type": "synthesis",
+      "color": "#9C27B0"
+    }
+  ],
+  "edges": [
+    {
+      "from": "overview",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/DoubleLinking",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "sources/为什么放弃LLM知识库",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "sources/qwen38本地部署实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "entities/Qwen38",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "sources/llm-wiki调研与选型",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "entities/LLMWikiAgent",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "entities/ObsidianLLMWikiLocal",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/LocalDeployment",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "concepts/Quantization",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "overview",
+      "to": "syntheses/llm-wiki-值得长期投入吗",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/CrossReference",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/CrossReference",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/CrossReference",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/CrossReference",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/DoubleLinking",
+      "to": "entities/Obsidian",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/DoubleLinking",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/DoubleLinking",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/DoubleLinking",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/DoubleLinking",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/HealthCheck",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/HealthCheck",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/KnowledgeRot",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/KnowledgeRot",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/KnowledgeRot",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/KnowledgeRot",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "sources/为什么放弃LLM知识库",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "concepts/DoubleLinking",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LLMWiki",
+      "to": "entities/RAG",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/LocalDeployment",
+      "to": "entities/LLMWikiAgent",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "concepts/Quantization",
+      "to": "entities/Qwen38",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Karpathy",
+      "to": "entities/RAG",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Karpathy",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Karpathy",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Karpathy",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/LLMWikiAgent",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/LLMWikiAgent",
+      "to": "sources/llm-wiki调研与选型",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/LLMWikiAgent",
+      "to": "sources/qwen38本地部署实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Obsidian",
+      "to": "concepts/DoubleLinking",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Obsidian",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/ObsidianLLMWikiLocal",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/ObsidianLLMWikiLocal",
+      "to": "sources/llm-wiki调研与选型",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/ObsidianLLMWikiLocal",
+      "to": "entities/LLMWikiAgent",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Ollama",
+      "to": "entities/Qwen38",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Ollama",
+      "to": "concepts/LocalDeployment",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Qwen38",
+      "to": "concepts/Quantization",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/Qwen38",
+      "to": "entities/Ollama",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/RAG",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/RAG",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "entities/RAG",
+      "to": "sources/为什么放弃LLM知识库",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/karpathy-llm-wiki访谈",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/karpathy-llm-wiki访谈",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/karpathy-llm-wiki访谈",
+      "to": "entities/RAG",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/karpathy-llm-wiki访谈",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/karpathy-llm-wiki访谈",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "entities/LLMWikiAgent",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "sources/qwen38本地部署实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "entities/ObsidianLLMWikiLocal",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/llm-wiki调研与选型",
+      "to": "sources/为什么放弃LLM知识库",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "concepts/DoubleLinking",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "entities/Obsidian",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/obsidian双链工作流实录",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/qwen38本地部署实录",
+      "to": "entities/Ollama",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/qwen38本地部署实录",
+      "to": "entities/Qwen38",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/qwen38本地部署实录",
+      "to": "concepts/LocalDeployment",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/qwen38本地部署实录",
+      "to": "concepts/Quantization",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/qwen38本地部署实录",
+      "to": "sources/llm-wiki调研与选型",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "entities/Karpathy",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "sources/为什么放弃LLM知识库",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "sources/karpathy-llm-wiki访谈",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "concepts/LLMWiki",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "concepts/HealthCheck",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "sources/为什么放弃LLM知识库",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "sources/obsidian双链工作流实录",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "concepts/CrossReference",
+      "type": "EXTRACTED"
+    },
+    {
+      "from": "syntheses/llm-wiki-值得长期投入吗",
+      "to": "concepts/KnowledgeRot",
+      "type": "EXTRACTED"
+    }
+  ],
+  "built": "2026-09-03"
+}
